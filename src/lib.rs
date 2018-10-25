@@ -22,7 +22,8 @@ pub mod sort {
 
     /// Partitions `seq` such that elements smaller than a pivot value (the
     /// first element of `seq`) are placed on the left side, while elements
-    /// equal or larger than pivot are placed on the right side.
+    /// equal or larger than pivot are placed on the right side. This is the
+    /// Hoare partition scheme.
     fn partition<T: PartialOrd>(seq: &mut [T]) -> usize {
         assert!(!seq.is_empty());
         let pivot = 0;
@@ -38,8 +39,9 @@ pub mod sort {
             }
 
             // If indices met each other or they're on the same element, quit
-            // (this is to avoid infinite loops when `seq` has e.g. two of the
-            // same elements, in which case the indices would never meet).
+            // (this is to avoid infinite loops when `seq` has e.g. two of
+            // the same elements, in which case the indices would never
+            // meet).
             if lo >= hi || (!(seq[lo] > seq[hi]) && !(seq[lo] < seq[hi])) {
                 return hi;
             }
