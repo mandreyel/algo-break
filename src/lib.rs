@@ -39,6 +39,7 @@ pub mod sort {
                 hi -= 1;
             }
 
+            // FIXME
             if lo >= hi || (!(seq[lo] > seq[hi]) && !(seq[lo] < seq[hi])) {
                 return hi;
             }
