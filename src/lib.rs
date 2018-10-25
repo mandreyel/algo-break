@@ -11,32 +11,30 @@ pub mod sort {
         }
     }
 
-    // FIXME: can't handle duplicates
     pub fn rquick_sort<T: PartialOrd + Clone>(seq: &mut [T]) {
         if !seq.is_empty() {
-            let lo = 0;
-            let hi = seq.len() - 1;
-            rquick_sort_impl(seq, lo, hi);
+            rquick_sort_impl(seq);
         }
     }
 
-    fn rquick_sort_impl<T: PartialOrd>(seq: &mut [T], lo: usize, hi: usize) {
-        if lo < hi {
-            let pivot = partition(seq, lo, hi);
+    fn rquick_sort_impl<T: PartialOrd>(seq: &mut [T]) {
+        if seq.len() > 1 {
+            let pivot = partition(seq);
             assert!(pivot < seq.len());
-            rquick_sort_impl(seq, lo, pivot);
-            rquick_sort_impl(seq, pivot + 1, hi);
+            rquick_sort_impl(&mut seq[..pivot + 1]);
+            rquick_sort_impl(&mut seq[pivot + 1..]);
         }
     }
 
-    /// Partitions `seq` such that elements smaller than a randomly chosen
-    /// pivot value are placed on the left side, while elements equal or
-    /// larger than pivot are placed on the right side.
-    fn partition<T: PartialOrd>(seq: &mut [T], mut lo: usize, mut hi: usize) -> usize {
+    /// Partitions `seq` such that elements smaller than a pivot value (the
+    /// first element of `seq`) are placed on the left side, while elements
+    /// equal or larger than pivot are placed on the right side.
+    // FIXME: can't handle duplicates
+    fn partition<T: PartialOrd>(seq: &mut [T]) -> usize {
         assert!(!seq.is_empty());
-        assert!(lo < seq.len());
-        assert!(hi < seq.len());
-        let pivot = lo;
+        let pivot = 0;
+        let mut lo = 0;
+        let mut hi = seq.len() - 1;
         loop {
             while seq[lo] < seq[pivot] {
                 lo += 1;
