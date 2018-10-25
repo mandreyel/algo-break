@@ -53,33 +53,35 @@ pub mod sort {
 mod tests {
     use super::*;
 
+    fn test_sorter<Sorter: Fn(&mut [i32])>(sort: Sorter) {
+        let mut array = [5, 10, 3, 3, 9, 2, 1];
+        sort(&mut array);
+        assert_eq!(array, [1, 2, 3, 3, 5, 9, 10]);
+
+        let mut array = [5, 10, 3, 9, 2, 1];
+        sort(&mut array);
+        assert_eq!(array, [1, 2, 3, 5, 9, 10]);
+
+        let mut array = [5, 5, 5];
+        sort(&mut array);
+        assert_eq!(array, [5, 5, 5]);
+
+        let mut array = [1];
+        sort(&mut array);
+        assert_eq!(array, [1]);
+
+        let mut array: [i32; 0] = [];
+        sort(&mut array);
+        assert_eq!(array, []);
+    }
+
     #[test]
     fn insertion_sort() {
-        let mut array = [3, 9, 2, 1];
-        sort::insertion_sort(&mut array);
-        assert_eq!(array, [1, 2, 3, 9]);
+        test_sorter(|mut array| sort::insertion_sort(&mut array));
     }
 
     #[test]
     fn rquick_sort() {
-        let mut array = [5, 10, 3, 3, 9, 2, 1];
-        sort::rquick_sort(&mut array);
-        assert_eq!(array, [1, 2, 3, 3, 5, 9, 10]);
-
-        let mut array = [5, 10, 3, 9, 2, 1];
-        sort::rquick_sort(&mut array);
-        assert_eq!(array, [1, 2, 3, 5, 9, 10]);
-
-        let mut array = [5, 5, 5];
-        sort::rquick_sort(&mut array);
-        assert_eq!(array, [5, 5, 5]);
-
-        let mut array = [1];
-        sort::rquick_sort(&mut array);
-        assert_eq!(array, [1]);
-
-        let mut array: [i32; 0] = [];
-        sort::rquick_sort(&mut array);
-        assert_eq!(array, []);
+        test_sorter(|mut array| sort::rquick_sort(&mut array));
     }
 }
