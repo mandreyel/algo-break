@@ -24,6 +24,7 @@ pub mod sort {
     /// first element of `seq`) are placed on the left side, while elements
     /// equal or larger than pivot are placed on the right side. This is the
     /// Hoare partition scheme.
+    // FIXME duplicate elements aren't handled correctly
     fn partition<T: PartialOrd>(seq: &mut [T]) -> usize {
         assert!(!seq.is_empty());
         let pivot = 0;
@@ -38,10 +39,6 @@ pub mod sort {
                 hi -= 1;
             }
 
-            // If indices met each other or they're on the same element, quit
-            // (this is to avoid infinite loops when `seq` has e.g. two of
-            // the same elements, in which case the indices would never
-            // meet).
             if lo >= hi || (!(seq[lo] > seq[hi]) && !(seq[lo] < seq[hi])) {
                 return hi;
             }
@@ -59,6 +56,10 @@ mod tests {
         let mut array = [5, 10, 3, 3, 9, 2, 1];
         sort(&mut array);
         assert_eq!(array, [1, 2, 3, 3, 5, 9, 10]);
+
+        let mut array = [5, 10, 3, 2, 3, 9, 2, 1];
+        sort(&mut array);
+        assert_eq!(array, [1, 2, 2, 3, 3, 5, 9, 10]);
 
         let mut array = [5, 10, 3, 9, 2, 1];
         sort(&mut array);
