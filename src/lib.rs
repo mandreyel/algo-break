@@ -21,7 +21,7 @@ pub mod sort {
         if seq.len() > 1 {
             let pivot = partition(seq);
             assert!(pivot < seq.len());
-            rquick_sort_impl(&mut seq[..pivot + 1]);
+            rquick_sort_impl(&mut seq[..pivot]);
             rquick_sort_impl(&mut seq[pivot + 1..]);
         }
     }
@@ -44,7 +44,10 @@ pub mod sort {
                 hi -= 1;
             }
 
-            if lo >= hi {
+            // If indices met each other or they're on the same element, quit
+            // (this is to avoid infinite loops when `seq` has e.g. two of the
+            // same elements, in which case the indices would never meet).
+            if lo >= hi || (!(seq[lo] > seq[hi]) && !(seq[lo] < seq[hi])) {
                 return hi;
             }
 
@@ -66,6 +69,10 @@ mod tests {
 
     #[test]
     fn rquick_sort() {
+        let mut array = [5, 10, 3, 3, 9, 2, 1];
+        sort::rquick_sort(&mut array);
+        assert_eq!(array, [1, 2, 3, 3, 5, 9, 10]);
+
         let mut array = [5, 10, 3, 9, 2, 1];
         sort::rquick_sort(&mut array);
         assert_eq!(array, [1, 2, 3, 5, 9, 10]);
