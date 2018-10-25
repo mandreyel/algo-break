@@ -12,17 +12,11 @@ pub mod sort {
     }
 
     pub fn rquick_sort<T: PartialOrd + Clone>(seq: &mut [T]) {
-        if !seq.is_empty() {
-            rquick_sort_impl(seq);
-        }
-    }
-
-    fn rquick_sort_impl<T: PartialOrd>(seq: &mut [T]) {
         if seq.len() > 1 {
             let pivot = partition(seq);
             assert!(pivot < seq.len());
-            rquick_sort_impl(&mut seq[..pivot]);
-            rquick_sort_impl(&mut seq[pivot + 1..]);
+            rquick_sort(&mut seq[..pivot]);
+            rquick_sort(&mut seq[pivot + 1..]);
         }
     }
 
