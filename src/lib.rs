@@ -86,7 +86,11 @@ pub mod sort {
 }
 
 #[cfg(test)]
+extern crate rand;
+
+#[cfg(test)]
 mod tests {
+    use rand::{self, Rng};
     use super::*;
 
     fn test_sorter<Sorter: Fn(&mut [i32])>(sort: Sorter) {
@@ -117,6 +121,20 @@ mod tests {
         let mut array: [i32; 0] = [];
         sort(&mut array);
         assert_eq!(array, []);
+
+        // Taken from https://github.com/servo/rust-quicksort/blob/master/lib.rs
+        let mut rng = rand::thread_rng();
+        for _ in 0u32 .. 50000u32 {
+            let len: usize = rng.gen();
+            let mut v: Vec<i32> = rng
+                .gen_iter::<i32>()
+                .take((len % 32) + 1)
+                .collect();
+            sort(&mut v[..]);
+            for i in 0 .. v.len() - 1 {
+                assert!(v[i] <= v[i + 1])
+            }
+        }
     }
 
     #[test]
