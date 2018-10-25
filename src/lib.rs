@@ -29,7 +29,6 @@ pub mod sort {
     /// Partitions `seq` such that elements smaller than a pivot value (the
     /// first element of `seq`) are placed on the left side, while elements
     /// equal or larger than pivot are placed on the right side.
-    // FIXME: can't handle duplicates
     fn partition<T: PartialOrd>(seq: &mut [T]) -> usize {
         assert!(!seq.is_empty());
         let pivot = 0;
@@ -76,5 +75,17 @@ mod tests {
         let mut array = [5, 10, 3, 9, 2, 1];
         sort::rquick_sort(&mut array);
         assert_eq!(array, [1, 2, 3, 5, 9, 10]);
+
+        let mut array = [5, 5, 5];
+        sort::rquick_sort(&mut array);
+        assert_eq!(array, [5, 5, 5]);
+
+        let mut array = [1];
+        sort::rquick_sort(&mut array);
+        assert_eq!(array, [1]);
+
+        let mut array: [i32; 0] = [];
+        sort::rquick_sort(&mut array);
+        assert_eq!(array, []);
     }
 }
