@@ -13,7 +13,7 @@ pub mod sort {
 
     pub fn rquick_sort<T: PartialOrd + Clone>(seq: &mut [T]) {
         if seq.len() > 1 {
-            let pivot = partition(seq);
+            let pivot = lomuto_partition(seq);
             assert!(pivot < seq.len());
             rquick_sort(&mut seq[..pivot]);
             rquick_sort(&mut seq[pivot + 1..]);
@@ -25,7 +25,7 @@ pub mod sort {
     /// equal or larger than pivot are placed on the right side. This is the
     /// Hoare partition scheme.
     // FIXME duplicate elements aren't handled correctly
-    fn partition<T: PartialOrd>(seq: &mut [T]) -> usize {
+    fn hoare_partition<T: PartialOrd>(seq: &mut [T]) -> usize {
         assert!(!seq.is_empty());
         let pivot = 0;
         let mut lo = 0;
@@ -34,18 +34,36 @@ pub mod sort {
             while seq[lo] < seq[pivot] {
                 lo += 1;
             }
-
             while seq[hi] > seq[pivot] {
                 hi -= 1;
             }
-
             // FIXME
             if lo >= hi || (!(seq[lo] > seq[hi]) && !(seq[lo] < seq[hi])) {
                 return hi;
             }
-
             seq.swap(lo, hi);
         }
+    }
+
+    fn lomuto_partition<T: PartialOrd>(seq: &mut [T]) -> usize {
+        assert!(!seq.is_empty());
+        let mut i = 0;
+        let mut k = i;
+        let pivot = seq.len() - 1;
+
+        while k < seq.len() - 1 {
+            if seq[k] < seq[pivot] {
+                seq.swap(i, k);
+                i += 1;
+            }
+            k += 1;
+        }
+
+        if *seq.last().unwrap() < seq[i] {
+            seq.swap(i, pivot);
+        }
+
+        i
     }
 }
 
