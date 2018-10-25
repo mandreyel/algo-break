@@ -11,9 +11,9 @@ pub mod sort {
         }
     }
 
-    pub fn rquick_sort<T: PartialOrd + Clone>(seq: &mut [T]) {
+    pub fn rquick_sort<T: PartialOrd>(seq: &mut [T]) {
         if seq.len() > 1 {
-            let pivot = lomuto_partition(seq);
+            let pivot = hoare_partition(seq);
             assert!(pivot < seq.len());
             rquick_sort(&mut seq[..pivot]);
             rquick_sort(&mut seq[pivot + 1..]);
@@ -21,13 +21,12 @@ pub mod sort {
     }
 
     /// Partitions `seq` such that elements smaller than a pivot value (the
-    /// first element of `seq`) are placed on the left side, while elements
-    /// equal or larger than pivot are placed on the right side. This is the
-    /// Hoare partition scheme.
-    // FIXME duplicate elements aren't handled correctly
+    /// first element of `seq`) are placed to the left of the pivot, while
+    /// elements equal or larger than pivot are placed to the right of the
+    /// pivot. This is the Hoare partition scheme.
     fn hoare_partition<T: PartialOrd>(seq: &mut [T]) -> usize {
         assert!(!seq.is_empty());
-        let pivot = 0;
+        let mut pivot = 0;
         let mut lo = 0;
         let mut hi = seq.len() - 1;
         loop {
@@ -37,11 +36,30 @@ pub mod sort {
             while seq[hi] > seq[pivot] {
                 hi -= 1;
             }
-            // FIXME
-            if lo >= hi || (!(seq[lo] > seq[hi]) && !(seq[lo] < seq[hi])) {
+
+            // If the two indices met, we're done.
+            if lo >= hi {
                 return hi;
             }
+
+            // In case of duplicate elements it's possible that the pivot value
+            // is not unique but the algorithm will not advance either indices
+            // (because they're the same as pivot), so we must nudge one of the
+            // indices forward to either arrive at a non-pivot value or meet the
+            // other index.
+            if seq[lo] == seq[pivot] && seq[hi] == seq[pivot] {
+                lo += 1;
+                continue;
+            }
+
             seq.swap(lo, hi);
+
+            // If either lo or hi was pivot, the pivot index needs to be updated.
+            if pivot == lo {
+                pivot = hi;
+            } else if pivot == hi {
+                pivot = lo;
+            }
         }
     }
 
@@ -87,6 +105,10 @@ mod tests {
         let mut array = [5, 5, 5];
         sort(&mut array);
         assert_eq!(array, [5, 5, 5]);
+
+        let mut array = [5, 1, 5, 1, 5, 1, 5];
+        sort(&mut array);
+        assert_eq!(array, [1, 1, 1, 5, 5, 5, 5]);
 
         let mut array = [1];
         sort(&mut array);
