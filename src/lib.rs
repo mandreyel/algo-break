@@ -24,7 +24,7 @@ pub mod sort {
     /// first element of `seq`) are placed to the left of the pivot, while
     /// elements equal or larger than pivot are placed to the right of the
     /// pivot. This is the Hoare partition scheme.
-    fn hoare_partition<T: PartialOrd>(seq: &mut [T]) -> usize {
+    pub fn hoare_partition<T: PartialOrd>(seq: &mut [T]) -> usize {
         assert!(!seq.is_empty());
         let mut pivot = 0;
         let mut lo = 0;
@@ -63,7 +63,7 @@ pub mod sort {
         }
     }
 
-    fn lomuto_partition<T: PartialOrd>(seq: &mut [T]) -> usize {
+    pub fn lomuto_partition<T: PartialOrd>(seq: &mut [T]) -> usize {
         assert!(!seq.is_empty());
         let mut i = 0;
         let mut k = i;
@@ -93,7 +93,7 @@ mod tests {
     use rand::{self, Rng};
     use super::*;
 
-    fn test_sorter<Sorter: Fn(&mut [i32])>(sort: Sorter) {
+    fn test_sorter<S: Fn(&mut [i32])>(sort: S) {
         let mut array = [5, 10, 3, 3, 9, 2, 1];
         sort(&mut array);
         assert_eq!(array, [1, 2, 3, 3, 5, 9, 10]);
@@ -101,6 +101,10 @@ mod tests {
         let mut array = [5, 10, 3, 2, 3, 9, 2, 1];
         sort(&mut array);
         assert_eq!(array, [1, 2, 2, 3, 3, 5, 9, 10]);
+
+        let mut array = [3, 5, 10, 3, 2, 3, 9, 2, 1];
+        sort(&mut array);
+        assert_eq!(array, [1, 2, 2, 3, 3, 3, 5, 9, 10]);
 
         let mut array = [5, 10, 3, 9, 2, 1];
         sort(&mut array);
@@ -133,6 +137,39 @@ mod tests {
             sort(&mut v[..]);
             for i in 0 .. v.len() - 1 {
                 assert!(v[i] <= v[i + 1])
+            }
+        }
+    }
+
+    #[test]
+    fn hoare_partition() {
+        let mut array = [5, 10, 3, 3, 9, 2, 1];
+        let pivot = sort::hoare_partition(&mut array);
+        assert_eq!(array, [1, 2, 3, 3, 5, 9, 10]);
+        assert_eq!(pivot, 4);
+
+        let mut array = [5, 10, 3, 2, 3, 9, 2, 1];
+        let pivot = sort::hoare_partition(&mut array);
+        assert_eq!(array, [1, 2, 3, 2, 3, 5, 9, 10]);
+        assert_eq!(pivot, 5);
+
+        let mut array = [3, 5, 3, 2, 3, 9, 2, 1];
+        let pivot = sort::hoare_partition(&mut array);
+        assert_eq!(array, [1, 2, 3, 2, 3, 3, 9, 5]);
+        assert_eq!(pivot, 5);
+
+        let mut rng = rand::thread_rng();
+        for _ in 0u32 .. 50000u32 {
+            let len: usize = rng.gen();
+            let mut v: Vec<i32> = rng
+                .gen_iter::<i32>()
+                .take((len % 32) + 1)
+                .collect();
+            let pivot = sort::hoare_partition(&mut v);
+            for i in 0..pivot {
+                for k in pivot..v.len() - 1 {
+                    assert!(v[i] < v[k]);
+                }
             }
         }
     }
