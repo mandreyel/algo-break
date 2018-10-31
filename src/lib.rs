@@ -11,12 +11,12 @@ pub mod sort {
         }
     }
 
-    pub fn rquick_sort<T: PartialOrd>(seq: &mut [T]) {
+    pub fn rquicksort<T: PartialOrd>(seq: &mut [T]) {
         if seq.len() > 1 {
             let pivot = hoare_partition(seq);
             assert!(pivot < seq.len());
-            rquick_sort(&mut seq[..pivot]);
-            rquick_sort(&mut seq[pivot + 1..]);
+            rquicksort(&mut seq[..pivot]);
+            rquicksort(&mut seq[pivot + 1..]);
         }
     }
 
@@ -143,7 +143,7 @@ mod tests {
     }
 
     #[test]
-    fn rquick_sort() {
-        test_sorter(|mut array| sort::rquick_sort(&mut array));
+    fn rquicksort() {
+        test_sorter(|mut array| sort::rquicksort(&mut array));
     }
 }
